@@ -4,10 +4,6 @@
 #include "fstream"
 #include <QDebug>
 
-//#include <QFileDialog>
-//#include <QTextStream>
-//#include <QFile>
-
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -56,9 +52,9 @@ MainWindow::MainWindow(QWidget *parent) :
             }
             li.push_back(im);
             //delete []_labels;
+
         }
     //
-    //qDebug() << "HOLAAAAA" ;
     if(li.begin()!=NULL){
         //
         linked_list<Image>::iterator it=li.begin();
@@ -82,6 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
         pixmap=a;
     }
     ui->label_image->setPixmap(pixmap);
+
 }
 
 MainWindow::~MainWindow()
@@ -137,7 +134,7 @@ void MainWindow::on_button_next_clicked()
 
 void MainWindow::on_pushback_clicked()
 {
-    string *_labels=new string[30];   //:D
+    string *_labels=new string[30];
     QString qstrname=ui->line_name->text();
     QString qstrpath=ui->line_path->text();
     QString qstrlabels=ui->text_labels->toPlainText();
@@ -156,8 +153,6 @@ void MainWindow::on_pushback_clicked()
                 ui->text_labels_2->append(aux);
             }
             else{
-                //qDebug()<<"entro";
-                //qDebug()<<i;
                 string qstrlabel=qstrlabels.toStdString();
                 QString aux=QString::fromStdString(qstrlabel.substr(j+1,i-j-1));
                 j=i;
@@ -167,20 +162,8 @@ void MainWindow::on_pushback_clicked()
             }
         }
     }
-    //string qstrlabel=qstrlabels.toStdString();
-    //qDebug()<<QString::fromStdString(qstrlabel.substr(0,3)); //substr(0,1) se refiere q leera el 0 hasta 1-1
-    qDebug()<<qstrlabels;
-    qDebug()<<qstrlabels.size();
     Image a(qstrname.toStdString(),qstrpath.toStdString(),_labels);
-    qDebug()<<"entro2";
     li.push_back(a);
-    /*QPixmap _a( QString::fromStdString(a.date_path()) );
-    pixmap=_a;
-    ui->label_image->setPixmap(pixmap);
-    */
-    qDebug()<<"entro";
-
-    qDebug()<<"salio";
 
     linked_list<Image>::iterator iterz1=li.begin();
     Image aux=*iterz1;
@@ -195,7 +178,7 @@ void MainWindow::on_pushback_clicked()
 void MainWindow::on_pushfront_clicked()
 {
 /*
-    string *_labels=new string[30];   //R
+    string *_labels=new string[30];
     QString qstrname=ui->line_name->text();
     QString qstrpath=ui->line_path->text();
     QString qstrlabels=ui->text_labels->toPlainText();
@@ -221,7 +204,6 @@ void MainWindow::on_pushfront_clicked()
     }
     Image a(qstrname.toStdString(),qstrpath.toStdString(),_labels);
     li.push_front(a);
-    delete []_labels;
 */
 }
 
@@ -269,12 +251,48 @@ void MainWindow::on_save_clicked()
 
 void MainWindow::on_Delete_clicked()
 {
-    Image a;
+    li.remove();
 
-    linked_list<Image>::node aux(a,NULL,NULL);
-    /*haz una funcion remove en la linked list y llamala por aqui para eliminar
-     despues*/
+    ofstream fs ("aiudaa.txt");
+    linked_list<Image>::iterator it;
+
+    it=li.begin();
+    Image im;
+    string str;
+    int _y=0;
+    while( it!=li.end() ){
+        im=*it;
+        str=im.date_path();
+        _y=str.size();
+        fs.write( (char *) &_y, sizeof( int ) ); //tamaño del string
+        fs.write(str.c_str(),_y);
+
+        str=im.date_name();
+        _y=str.size();
+        fs.write( (char *) &_y, sizeof( int ) );
+        fs.write(str.c_str(),_y);
+
+        int i=0;
+        while(im.date_label()[i] != "\0"){
+            i++;
+        }
+        fs.write( (char *) &i, sizeof( int ) ); //total de labels a leer
+        i=0;
+        while( im.date_label()[i] != "\0" ){
+            str=im.date_label()[i];
+            _y=str.size();
+            fs.write( (char *) &_y, sizeof( int ) ); //tamaño del string
+            fs.write(str.c_str(),_y);
+            i++;
+        }
+        ++it;
+    }
+    fs.close();
+    remove("jordy2.0.txt");
+    rename("aiudaa.txt","jordy2.0.txt");
+
 }
+
 
 
 void MainWindow::on_Reserva_clicked()
@@ -294,18 +312,34 @@ void MainWindow::on_Reserva_clicked()
     string cadena,direccion_total,destino="Reserva";
 
     ifstream fs("jordy2.0.txt",ios::binary);
-        int _y;
-        fs.read( (char *) & _y, sizeof( int )); //a terminar el bloc de notas
-        char* f0=new char[_y+2]; //el +2 es por el tamaño del string q ocupa y su \0
-        fs.read( f0, _y );
-        f0[_y]=0;
-        direccion_total=f0;
-        qDebug()<<QString::fromStdString(direccion_total);
-        delete []f0;
 
-    if(archivo=fopen(direccion_total.c_str(), "r")){
-        cadena="copy "+ direccion_total + " " + destino;
-        system(cadena.c_str());
-    }
+        string name,labels;
+        int _y=0,nl=0;
+        while( fs.read( (char *) & _y, sizeof( int )) ){ //a terminar el bloc de notas
+            char* f0=new char[_y+2]; //el +2 es por el tamaño del string q ocupa y su \0
+            fs.read( f0, _y );
+            f0[_y]=0;
+            direccion_total=f0;
+            qDebug()<<QString::fromStdString(direccion_total);
+            delete []f0;
 
+            fs.read( (char *) & _y, sizeof( int ));
+            char* f1=new char[_y+2];
+            fs.read( f1, _y );
+            delete []f1;
+
+            fs.read( (char *) & nl, sizeof( int ));
+            for(int i=0;i<nl;i++){
+                fs.read( (char *) & _y, sizeof( int ));
+                char* f2=new char[_y+2];
+                fs.read( f2, _y );
+                delete []f2;
+            }
+
+            if(archivo=fopen(direccion_total.c_str(), "r")){
+                cadena="copy "+ direccion_total + " " + destino;
+                system(cadena.c_str());
+            }
+
+        }
 }

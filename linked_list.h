@@ -3,13 +3,12 @@
 #include<iostream>
 #include"image.h"
 #include<direct.h>
-#include <QDebug>
+#include<QDebug>
 
 using namespace std;
 
 template<class T>
 class linked_list{
-    public:
     struct node{
         T date;
         node* p_next;
@@ -24,14 +23,16 @@ class linked_list{
     private:
         node* p_head;
         node* p_end;
+        node* p_del_aux;
 
     public:
         node* n;
-        linked_list():p_head(NULL),p_end(NULL),n(NULL){}
+        linked_list():p_head(NULL),p_end(NULL),n(NULL),p_del_aux(NULL){}
         ~linked_list(){
             while(p_head){
                 remove_front();
             }
+            delete p_del_aux;
         }
 
         void push_front(T&d){
@@ -48,30 +49,22 @@ class linked_list{
         }
 
         void push_back(const T &d){
-            qDebug()<<"1";
             node* p_aux=p_end;
-            qDebug()<<"2";
-            p_end=new node(d,NULL,p_end);
-            qDebug()<<"3";
+            T _d=d;
+            p_end=new node(_d,NULL,p_end);
             if(p_aux==NULL){
                 p_head=p_end; //cuando inicie con push_back
-                qDebug()<<"4";
                 n=p_end;
             }
             else if(p_aux->p_next==NULL){
-                qDebug()<<"4.2";
                 p_aux->p_next=p_end;
             }
-            qDebug()<<"5";
             n=p_head;
         }
 
         void remove_front(){
             if(!p_head) return;
             node* del=p_head;
-            /*if(del->date!=sizeof(int)){
-                qDebug()<<"entro al desctructor de date";
-            }*/
             p_head=p_head->p_next;
             delete del;
         }
@@ -99,25 +92,24 @@ class linked_list{
                 }
             };
 
-        void remove(int posic){
-            int j=posic-2;
-            int i=0;
-            linked_list<string>::iterator it;
+        void remove(){
+            Image a;
             node* p_aux;
-            node* del;
+            node* del=n;
             node* m=p_head;
-            while(i!=posic){
-                if(i==j){
-                    p_aux=m;
-                }
-                if(i==j+1){
-                    del=m;
-                }
-                m=m->p_next;
-                i++;
-            }
-            p_aux->p_next=m;
-            m->p_prev=p_aux;
+            if(n==p_head)
+                p_head=n->p_next;
+            if(n==p_end)
+                p_end=n->p_prev;
+            p_aux=n->p_prev;
+            p_aux->p_next=n->p_next;
+            p_aux=n->p_next;
+            p_aux->p_prev=n->p_prev;
+            del->p_next=NULL;
+            del->p_prev=NULL;
+
+
+
             delete del;
         }
         iterator now(){
