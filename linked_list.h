@@ -27,13 +27,7 @@ class linked_list{
 
     public:
         node* n;
-        //node aux;
-        linked_list():p_head(NULL),p_end(NULL),n(NULL){
-        /*    Image a;
-            node axu(a,NULL,NULL);
-            aux=axu;
-        */
-        }
+        linked_list():p_head(NULL),p_end(NULL),n(NULL){}
         ~linked_list(){
             while(p_head){
                 remove_front();
@@ -75,6 +69,9 @@ class linked_list{
         void remove_front(){
             if(!p_head) return;
             node* del=p_head;
+            /*if(del->date!=sizeof(int)){
+                qDebug()<<"entro al desctructor de date";
+            }*/
             p_head=p_head->p_next;
             delete del;
         }

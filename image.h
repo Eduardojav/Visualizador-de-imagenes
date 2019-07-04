@@ -22,9 +22,7 @@ class Image{
             }
         }
     }
-    ~Image(){
-
-    }
+    ~Image(){}
 
     Image& operator =(const Image& a){
         name=a.date_name();

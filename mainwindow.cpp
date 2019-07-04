@@ -17,11 +17,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     pixmap.fill(Qt::white);
     //
-    ifstream fs("jordy.txt",ios::binary);
+    ifstream fs("jordy2.0.txt",ios::binary);
         string dir,name,labels;
-        string *_labels=new string[30];
-        int _y,nl;
+        int _y=0,nl=0;
         while( fs.read( (char *) & _y, sizeof( int )) ){ //a terminar el bloc de notas
+            string *_labels=new string[30];
             char* f0=new char[_y+2]; //el +2 es por el tamaño del string q ocupa y su \0
             fs.read( f0, _y );
             f0[_y]=0;
@@ -47,6 +47,13 @@ MainWindow::MainWindow(QWidget *parent) :
             }
 
             Image im(name,dir,_labels);
+            qDebug()<<QString::fromStdString(name);
+            qDebug()<<QString::fromStdString(dir);
+            int mm=0;
+            while(_labels[mm]!="\0"){
+                qDebug()<<QString::fromStdString(_labels[mm]);
+                mm++;
+            }
             li.push_back(im);
             //delete []_labels;
         }
@@ -187,7 +194,7 @@ void MainWindow::on_pushback_clicked()
 
 void MainWindow::on_pushfront_clicked()
 {
-
+/*
     string *_labels=new string[30];   //R
     QString qstrname=ui->line_name->text();
     QString qstrpath=ui->line_path->text();
@@ -215,12 +222,13 @@ void MainWindow::on_pushfront_clicked()
     Image a(qstrname.toStdString(),qstrpath.toStdString(),_labels);
     li.push_front(a);
     delete []_labels;
+*/
 }
 
 void MainWindow::on_save_clicked()
 {
 
-    ofstream fs ("jordy.txt",ios::binary);
+    ofstream fs ("jordy2.0.txt");
     linked_list<Image>::iterator it;
 
     it=li.begin();
@@ -243,7 +251,7 @@ void MainWindow::on_save_clicked()
         while(im.date_label()[i] != "\0"){
             i++;
         }
-        fs.write( (char *) &_y, sizeof( int ) ); //total de labels a leer
+        fs.write( (char *) &i, sizeof( int ) ); //total de labels a leer
         i=0;
         while( im.date_label()[i] != "\0" ){
             str=im.date_label()[i];
@@ -262,28 +270,30 @@ void MainWindow::on_save_clicked()
 void MainWindow::on_Delete_clicked()
 {
     Image a;
-    linked_list<Image>::node aux(a,NULL,NULL);
 
+    linked_list<Image>::node aux(a,NULL,NULL);
+    /*haz una funcion remove en la linked list y llamala por aqui para eliminar
+     despues*/
 }
 
 
 void MainWindow::on_Reserva_clicked()
 {
     DIR * direct;
-    string dir="C:\Reserva";
+    string dir="Reserva";
     if(direct=opendir(dir.c_str())){
         closedir(direct); //encontro
     }
     else{
-        string direccion_total="C:\Reserva";
+        string direccion_total="Reserva";
         if( mkdir(direccion_total.c_str())==0 )qDebug()<<"\nCreada con exito";
         else qDebug()<<"\nHa ocurrido un error";
 
     }                      //no encontro
     FILE * archivo;
-    string cadena,direccion_total,destino="C:\Reserva";
+    string cadena,direccion_total,destino="Reserva";
 
-    ifstream fs("jordy.txt",ios::binary);
+    ifstream fs("jordy2.0.txt",ios::binary);
         int _y;
         fs.read( (char *) & _y, sizeof( int )); //a terminar el bloc de notas
         char* f0=new char[_y+2]; //el +2 es por el tamaño del string q ocupa y su \0
@@ -296,9 +306,6 @@ void MainWindow::on_Reserva_clicked()
     if(archivo=fopen(direccion_total.c_str(), "r")){
         cadena="copy "+ direccion_total + " " + destino;
         system(cadena.c_str());
-    }
-    else{
-
     }
 
 }
