@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     pixmap.fill(Qt::white);
-    //
+    n_link=0;
     ifstream fs("jordy2.0.txt",ios::binary);
         string dir,name,labels;
         int _y=0,nl=0;
@@ -51,15 +51,13 @@ MainWindow::MainWindow(QWidget *parent) :
                 mm++;
             }
             li.push_back(im);
-            //delete []_labels;
-
         }
-    //
+
     if(li.begin()!=NULL){
         //
-        linked_list<Image>::iterator it=li.begin();
-        Image imag=*it;
-        QPixmap a( QString::fromStdString(imag.date_path()) );
+        it_p=li.begin();
+        Image imag=*it_p;
+        QPixmap a( QString::fromStdString(imag.date_path()+imag.date_name()) );
         pixmap=a;
         ui->text_labels_2->setText(" ");
         ui->text_labels_2->append("Nombre:");
@@ -74,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }//
     }
     else {
+        it_p=NULL;
         QPixmap a;
         pixmap=a;
     }
@@ -89,9 +88,9 @@ MainWindow::~MainWindow()
 void MainWindow::on_button_prev_clicked()
 {
     pixmap.fill(Qt::white);
-    linked_list<Image>::iterator it2=li.position("prev");
-    Image imag=*it2;
-    QPixmap z(QString::fromStdString(imag.date_path()));
+    --it_p;
+    Image imag=*it_p;
+    QPixmap z(QString::fromStdString(imag.date_path()+imag.date_name()));
     pixmap=z;
     ui->text_labels_2->setText(" ");
     ui->text_labels_2->append("Nombre:");
@@ -112,10 +111,9 @@ void MainWindow::on_button_prev_clicked()
 void MainWindow::on_button_next_clicked()
 {
     pixmap.fill(Qt::white);
-
-    linked_list<Image>::iterator it2=li.position("next");
-    Image imag=*it2;
-    QPixmap z(QString::fromStdString(imag.date_path()));
+    ++it_p;
+    Image imag=*it_p;
+    QPixmap z(QString::fromStdString(imag.date_path()+imag.date_name()));
     pixmap=z;
     ui->text_labels_2->setText(" ");
     ui->text_labels_2->append("Nombre:");
@@ -164,60 +162,30 @@ void MainWindow::on_pushback_clicked()
     }
     Image a(qstrname.toStdString(),qstrpath.toStdString(),_labels);
     li.push_back(a);
-
-    linked_list<Image>::iterator iterz1=li.begin();
-    Image aux=*iterz1;
-    int i=0;
-    while( aux.date_label()[i] != "\0" ){
-        qDebug()<<QString::fromStdString(aux.date_label()[i]);
-        i++;
+    n_link++;
+    if(it_p==NULL)it_p=li.begin();
+    qDebug()<<QString::fromStdString(a.date_name());
+    qDebug()<<QString::fromStdString(a.date_path());
+    int mm=0;
+    while(_labels[mm]!="\0"){
+        qDebug()<<QString::fromStdString(a.date_label()[mm]);
+        mm++;
     }
-
+    qDebug()<<QString::fromStdString(a.date_path()+a.date_name());
 }
 
-void MainWindow::on_pushfront_clicked()
-{
-/*
-    string *_labels=new string[30];
-    QString qstrname=ui->line_name->text();
-    QString qstrpath=ui->line_path->text();
-    QString qstrlabels=ui->text_labels->toPlainText();
-    int j=0;
-    int m=0;
-    for(int i=0;i<qstrlabels.size();i++){
-        if(qstrlabels[i]=="\n"){
-            if(j==0){
-                string qstrlabel=qstrlabels.toStdString();
-                QString aux=QString::fromStdString(qstrlabel.substr(j,i-j));
-                j=i;
-                _labels[m]=aux.toStdString();
-                m++;
-            }
-            else{
-                string qstrlabel=qstrlabels.toStdString();
-                QString aux=QString::fromStdString(qstrlabel.substr(j+1,i-j-1));
-                j=i;
-                _labels[m]=aux.toStdString();
-                m++;
-            }
-        }
-    }
-    Image a(qstrname.toStdString(),qstrpath.toStdString(),_labels);
-    li.push_front(a);
-*/
-}
 
 void MainWindow::on_save_clicked()
 {
 
     ofstream fs ("jordy2.0.txt");
     linked_list<Image>::iterator it;
-
     it=li.begin();
+    int as=0;
     Image im;
     string str;
     int _y=0;
-    while( it!=li.end() ){
+    while( as!=n_link){
         im=*it;
         str=im.date_path();
         _y=str.size();
@@ -242,6 +210,7 @@ void MainWindow::on_save_clicked()
             fs.write(str.c_str(),_y);
             i++;
         }
+        as++;
         ++it;
     }
     fs.close();
@@ -251,17 +220,20 @@ void MainWindow::on_save_clicked()
 
 void MainWindow::on_Delete_clicked()
 {
-    li.remove();
-
+    linked_list<Image>::iterator aux=it_p;
+    on_button_next_clicked();
+    li.remove(aux.nod());
+    qDebug()<<"salio";
     ofstream fs ("aiudaa.txt");
-    linked_list<Image>::iterator it;
+    linked_list<Image>::iterator it2;
 
-    it=li.begin();
+    it2=li.begin();
+    int as=0;
     Image im;
     string str;
     int _y=0;
-    while( it!=li.end() ){
-        im=*it;
+    while(as!=n_link){
+        im=*it2;
         str=im.date_path();
         _y=str.size();
         fs.write( (char *) &_y, sizeof( int ) ); //tamaño del string
@@ -285,11 +257,13 @@ void MainWindow::on_Delete_clicked()
             fs.write(str.c_str(),_y);
             i++;
         }
-        ++it;
+        as++;
+        ++it2;
     }
     fs.close();
     remove("jordy2.0.txt");
     rename("aiudaa.txt","jordy2.0.txt");
+
 
 }
 
@@ -343,3 +317,5 @@ void MainWindow::on_Reserva_clicked()
 
         }
 }
+
+

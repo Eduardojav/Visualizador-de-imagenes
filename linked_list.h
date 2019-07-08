@@ -1,7 +1,6 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 #include<iostream>
-#include"image.h"
 #include<direct.h>
 #include<QDebug>
 
@@ -23,43 +22,41 @@ class linked_list{
     private:
         node* p_head;
         node* p_end;
-        node* p_del_aux;
-
     public:
-        node* n;
-        linked_list():p_head(NULL),p_end(NULL),n(NULL),p_del_aux(NULL){}
+
+        linked_list():p_head(NULL),p_end(NULL){}
         ~linked_list(){
             while(p_head){
                 remove_front();
             }
-            delete p_del_aux;
         }
 
         void push_front(T&d){
+            /*
             node* p_aux=p_head;
             p_head=new node(d,p_head,NULL);
             if(p_aux==NULL){
                 p_end=p_head; //cuando inicie con push_front
-                n=p_head;
             }
-            else if(p_aux->p_prev==NULL){
+            else{
                 p_aux->p_prev=p_head;
             }
-            n=p_head;
+            */
         }
 
         void push_back(const T &d){
             node* p_aux=p_end;
-            T _d=d;
-            p_end=new node(_d,NULL,p_end);
+            p_end=new node(d,p_head,p_end);
             if(p_aux==NULL){
                 p_head=p_end; //cuando inicie con push_back
-                n=p_end;
+                p_end->p_next=p_head;
+                p_head->p_prev=p_end;
             }
-            else if(p_aux->p_next==NULL){
+            else{
                 p_aux->p_next=p_end;
+                p_head->p_prev=p_end;
             }
-            n=p_head;
+
         }
 
         void remove_front(){
@@ -68,6 +65,14 @@ class linked_list{
             p_head=p_head->p_next;
             delete del;
         }
+
+        void remove_back(){
+            if(!p_end) return;
+            node* del=p_end;
+            p_end=p_end->p_prev;
+            delete del;
+        }
+
         class iterator{
             private:
                 node* m;
@@ -83,37 +88,39 @@ class linked_list{
                 node*& nod(){
                     return m;
                 }
-                iterator& operator ++(){	//siguiente
+                iterator& operator ++(){	//next
                     m=m->p_next;
+                    return *this;
+                }
+                iterator& operator --(){    //prev
+                    m=m->p_prev;
                     return *this;
                 }
                 bool operator !=(const iterator& it){
                     return m!=it.m;
                 }
+                bool operator ==(const iterator& it){
+                    return m==it.m;
+                }
             };
 
-        void remove(){
-            Image a;
-            node* p_aux;
-            node* del=n;
-            node* m=p_head;
-            if(n==p_head)
-                p_head=n->p_next;
-            if(n==p_end)
-                p_end=n->p_prev;
-            p_aux=n->p_prev;
-            p_aux->p_next=n->p_next;
-            p_aux=n->p_next;
-            p_aux->p_prev=n->p_prev;
-            del->p_next=NULL;
-            del->p_prev=NULL;
+        void remove(node* aux){
+
+            if(aux==p_head)
+            {
+                remove_front();
 
 
+            }
+            else if(aux==p_end)
+                remove_back();
+            else {
+            aux->p_next->p_prev=aux->p_prev;
+            aux->p_prev->p_next=aux->p_next;
+            aux->p_prev=NULL;
+            aux->p_next=NULL;
+            delete aux;}
 
-            delete del;
-        }
-        iterator now(){
-            return iterator(n);
         }
 
         iterator begin(){
@@ -124,21 +131,6 @@ class linked_list{
         }
         iterator end(){
             return iterator(NULL);
-        }
-        iterator position(string a){
-            if(a=="next"){
-                n=n->p_next;
-                if(n==NULL){
-                    n=p_head;
-                }
-            }
-            else if(a=="prev"){
-                n=n->p_prev;
-                if(n==NULL){
-                    n=p_end;
-                }
-            }
-            return iterator(n);
         }
 };
 

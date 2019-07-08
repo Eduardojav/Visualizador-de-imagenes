@@ -26,13 +26,9 @@ private slots:
 
     void on_pushback_clicked();
 
-    void on_pushfront_clicked();
-
     void on_save_clicked();
 
     void on_Delete_clicked();
-
-
 
     void on_Reserva_clicked();
 
@@ -40,7 +36,9 @@ private:
     Ui::MainWindow *ui;
 
     linked_list<Image> li;
+    linked_list<Image>::iterator it_p;
     QPixmap pixmap;
+    int n_link;
 };
 
 #endif // MAINWINDOW_H
