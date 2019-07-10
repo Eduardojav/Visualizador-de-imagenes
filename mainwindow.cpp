@@ -51,10 +51,11 @@ MainWindow::MainWindow(QWidget *parent) :
                 mm++;
             }
             li.push_back(im);
+
         }
 
     if(li.begin()!=NULL){
-        //
+
         it_p=li.begin();
         Image imag=*it_p;
         QPixmap a( QString::fromStdString(imag.date_path()+imag.date_name()) );
@@ -69,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
         while( imag.date_label()[i] != "\0" ){
             ui->text_labels_2->append(QString::fromStdString(imag.date_label()[i]));
             i++;
-        }//
+        }
     }
     else {
         it_p=NULL;
@@ -141,8 +142,6 @@ void MainWindow::on_pushback_clicked()
     for(int i=0;i<qstrlabels.size();i++){
         if(qstrlabels[i]=="\n"){
             if(j==0){
-                qDebug()<<"entro";
-                qDebug()<<i;
                 string qstrlabel=qstrlabels.toStdString();
                 QString aux=QString::fromStdString(qstrlabel.substr(j,i-j));
                 j=i;
@@ -164,6 +163,10 @@ void MainWindow::on_pushback_clicked()
     li.push_back(a);
     n_link++;
     if(it_p==NULL)it_p=li.begin();
+    Image* aux_imag=&*it_p;
+    bst_li.insert(aux_imag);
+    qDebug()<<"DEBE HABER INSERTADO";
+
     qDebug()<<QString::fromStdString(a.date_name());
     qDebug()<<QString::fromStdString(a.date_path());
     int mm=0;
@@ -174,6 +177,37 @@ void MainWindow::on_pushback_clicked()
     qDebug()<<QString::fromStdString(a.date_path()+a.date_name());
 }
 
+void MainWindow::on_pushfront_clicked()
+{
+/*
+    string *_labels=new string[30];
+    QString qstrname=ui->line_name->text();
+    QString qstrpath=ui->line_path->text();
+    QString qstrlabels=ui->text_labels->toPlainText();
+    int j=0;
+    int m=0;
+    for(int i=0;i<qstrlabels.size();i++){
+        if(qstrlabels[i]=="\n"){
+            if(j==0){
+                string qstrlabel=qstrlabels.toStdString();
+                QString aux=QString::fromStdString(qstrlabel.substr(j,i-j));
+                j=i;
+                _labels[m]=aux.toStdString();
+                m++;
+            }
+            else{
+                string qstrlabel=qstrlabels.toStdString();
+                QString aux=QString::fromStdString(qstrlabel.substr(j+1,i-j-1));
+                j=i;
+                _labels[m]=aux.toStdString();
+                m++;
+            }
+        }
+    }
+    Image a(qstrname.toStdString(),qstrpath.toStdString(),_labels);
+    li.push_front(a);
+*/
+}
 
 void MainWindow::on_save_clicked()
 {
@@ -220,9 +254,7 @@ void MainWindow::on_save_clicked()
 
 void MainWindow::on_Delete_clicked()
 {
-    linked_list<Image>::iterator aux=it_p;
-    on_button_next_clicked();
-    li.remove(aux.nod());
+    li.remove(it_p.nod());
     qDebug()<<"salio";
     ofstream fs ("aiudaa.txt");
     linked_list<Image>::iterator it2;
@@ -263,7 +295,6 @@ void MainWindow::on_Delete_clicked()
     fs.close();
     remove("jordy2.0.txt");
     rename("aiudaa.txt","jordy2.0.txt");
-
 
 }
 
@@ -319,3 +350,40 @@ void MainWindow::on_Reserva_clicked()
 }
 
 
+void MainWindow::on_Search_name_clicked()
+{
+    string *_labels=new string[30];
+    QString qstrname=ui->line_name->text();
+    QString qstrpath=ui->line_path->text();
+    QString qstrlabels=ui->text_labels->toPlainText();
+    int j=0;
+    int m=0;
+    for(int i=0;i<qstrlabels.size();i++){
+        if(qstrlabels[i]=="\n"){
+            if(j==0){
+                qDebug()<<"entro";
+                qDebug()<<i;
+                string qstrlabel=qstrlabels.toStdString();
+                QString aux=QString::fromStdString(qstrlabel.substr(j,i-j));
+                j=i;
+                _labels[m]=aux.toStdString();
+                m++;
+            }
+            else{
+                string qstrlabel=qstrlabels.toStdString();
+                QString aux=QString::fromStdString(qstrlabel.substr(j+1,i-j-1));
+                j=i;
+                _labels[m]=aux.toStdString();
+                m++;
+
+            }
+        }
+    }
+    Image a(qstrname.toStdString(),qstrpath.toStdString(),_labels);
+    Image* aux_imag=&a;
+    if(bst_li.find(aux_imag)==true) qDebug()<<"Lo encontro";
+    else {
+        qDebug()<<"No lo encontro";
+    }
+
+}

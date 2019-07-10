@@ -199,7 +199,7 @@ p, li { white-space: pre-wrap; }
      <string>Editar_label</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_4">
+   <widget class="QPushButton" name="Search_name">
     <property name="geometry">
      <rect>
       <x>390</x>

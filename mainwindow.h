@@ -5,6 +5,7 @@
 #include "linked_list.h"
 #include "QPixmap"
 #include "image.h"
+#include "bst.h"
 
 
 namespace Ui {
@@ -26,16 +27,21 @@ private slots:
 
     void on_pushback_clicked();
 
+    void on_pushfront_clicked();
+
     void on_save_clicked();
 
     void on_Delete_clicked();
 
     void on_Reserva_clicked();
 
+    void on_Search_name_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     linked_list<Image> li;
+    bst<Image> bst_li;
     linked_list<Image>::iterator it_p;
     QPixmap pixmap;
     int n_link;

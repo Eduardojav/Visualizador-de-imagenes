@@ -31,6 +31,13 @@ class Image{
         return *this;
     }
 
+    bool operator==(const Image& a){
+        return name==a.date_name() && path==a.date_path();
+    }
+    bool operator>(const Image& a){
+        return name>a.date_name();
+    }
+
     string date_name()const{
         return name;
     }

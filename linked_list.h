@@ -105,13 +105,9 @@ class linked_list{
             };
 
         void remove(node* aux){
-
+            /*
             if(aux==p_head)
-            {
                 remove_front();
-
-
-            }
             else if(aux==p_end)
                 remove_back();
             else {
@@ -120,7 +116,7 @@ class linked_list{
             aux->p_prev=NULL;
             aux->p_next=NULL;
             delete aux;}
-
+        */
         }
 
         iterator begin(){

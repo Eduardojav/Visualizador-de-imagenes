@@ -29,6 +29,7 @@ SOURCES += \
         mainwindow.cpp
 
 HEADERS += \
+        bst.h \
         image.h \
         linked_list.h \
         mainwindow.h
